@@ -79,10 +79,63 @@ groupedtips3=tips.groupby(['smoker', 'day']).agg({'tip': [np.size, np.mean]})
 
 
 #################################join#########################################
-df1 = pd.DataFrame({'key': ['A', 'B', 'C', 'D'],'value': np.random.randn(4)})
+df1 = pd.DataFrame({'key': ['A', 'B', 'C', 'D'],
+   ....:                     'value': np.random.randn(4)})
 
-df2 = pd.DataFrame({'key': ['B', 'D', 'D', 'E'],'value': np.random.randn(4)})
+df2 = pd.DataFrame({'key': ['B', 'D', 'D', 'E'],
+   ....:                     'value': np.random.randn(4)})
 
 #innerjoin
 pd.merge(df1, df2, on='key')
 indexed_df2 = df2.set_index('key')
+
+
+
+#==============================================================================
+# #Top N rows with offset
+# SELECT * FROM tips
+# ORDER BY tip DESC
+# LIMIT 10 OFFSET 5
+#==============================================================================
+tips.nlargest(10+5, columns='tip').tail(10)
+
+
+#==========================oracle 分组分析函数====================================================
+# 
+# -- Oracle's ROW_NUMBER() analytic function
+# SELECT * FROM (
+#   SELECT
+#     t.*,
+#     ROW_NUMBER() OVER(PARTITION BY day ORDER BY total_bill DESC) AS rn
+#   FROM tips t
+# )
+# WHERE rn < 3
+# ORDER BY day, rn;
+#==============================================================================
+
+(tips.assign(rn=tips.sort_values(['total_bill'], ascending=False)
+   ....:                     .groupby(['day'])
+   ....:                     .cumcount() + 1)
+   ....:      .query('rn < 3')
+   ....:      .sort_values(['day','rn'])
+   )
+   
+(tips.assign(rnk=tips.groupby(['day'])['total_bill']
+   ....:                      .rank(method='first', ascending=False))
+   ....:      .query('rnk < 3')
+   ....:      .sort_values(['day','rnk'])
+   ....: )
+#==============================================================================
+# 
+# UPDATE tips
+# SET tip = tip*2
+# WHERE tip < 2;
+#==============================================================================
+
+
+tips.loc[tips['tip'] < 2, 'tip'] *= 2
+
+# DELETE FROM tips
+# WHERE tip > 9;
+#==============================================================================
+tips = tips.loc[tips['tip'] <= 9]
