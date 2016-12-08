@@ -79,11 +79,9 @@ groupedtips3=tips.groupby(['smoker', 'day']).agg({'tip': [np.size, np.mean]})
 
 
 #################################join#########################################
-df1 = pd.DataFrame({'key': ['A', 'B', 'C', 'D'],
-   ....:                     'value': np.random.randn(4)})
+df1 = pd.DataFrame({'key': ['A', 'B', 'C', 'D'],'value': np.random.randn(4)})
 
-df2 = pd.DataFrame({'key': ['B', 'D', 'D', 'E'],
-   ....:                     'value': np.random.randn(4)})
+df2 = pd.DataFrame({'key': ['B', 'D', 'D', 'E'],'value': np.random.randn(4)})
 
 #innerjoin
 pd.merge(df1, df2, on='key')
