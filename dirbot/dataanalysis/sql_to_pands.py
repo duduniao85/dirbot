@@ -126,3 +126,6 @@ tips.loc[tips['tip'] < 2, 'tip'] *= 2
 # WHERE tip > 9;
 #==============================================================================
 tips = tips.loc[tips['tip'] <= 9]
+
+
+table.groupby('YEARMONTH').CLIENTCODE.nunique()
